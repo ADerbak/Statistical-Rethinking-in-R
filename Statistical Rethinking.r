@@ -6,12 +6,15 @@
 
 
 # Install rethinking packages
-install.packages('devtools', type = "win.binary") # Use this to install devtools on windows
-install.packages(c("coda","mvtnorm","loo","daggity"))
-library(devtools)
-devtools::install_github("rmcelreath/rethinking")
+install.packages(c("devtools","mvtnorm","loo","coda"),dependencies=TRUE, type = "win.binary") # Use this to install devtools on windows
 
-2
+# Code from book -- Use above instead
+#install.packages(c("coda","mvtnorm","loo","daggity"))
+
+library(devtools)
+devtools::install_github("rmcelreath/rethinking") # when running this, select option 3 - None!
+
+
 #######################
 
 # Chapter 2
@@ -75,3 +78,27 @@ mtext("20 points")
 ##2.4.2 Quadratic Approximation
 
 library(rethinking)
+
+# To use {map}, you provide a formula, a list of data, and a list of start values for the parameters.
+# The dorumla defines the likelihood and prior
+# The data list is just the count of water (6)
+
+globe.qa <- map( # formula
+  alist( # list of start values for the parameters.
+    w~dbinom(9,p), # binomial likelihood
+    p ~ dunif(0,1) # uniform prior
+    ), 
+  data=list(w=6) # data
+  )
+
+precis(globe.qa)
+
+# analytical calculation
+w <- 6
+n <- 9
+
+curve(dbeta(x, w+1,n-w+1), from=0, to=1 )
+
+#quadratic approximation
+curve(dnorm(x, 0.67, 0.16,), lty=2, add=TRUE)
+
